@@ -33,6 +33,61 @@
   - Focus on BNM/SC approved products only.
 - **Security:** Use Cloud Functions to proxy Gemini API calls to protect sensitive logic and keys.
 
+## Agent Team and Collaboration Model
+
+### Team Composition (Balanced 6-Agent Team)
+1. **Product Agent**
+   - Owns user journey, feature scope, and PRD alignment.
+   - Verifies each output supports B40/M40 accessibility and financial literacy goals.
+
+2. **Prompt/AI Agent**
+   - Designs Gemini prompts for Bazi profiling, recommendations, and scam analysis.
+   - Enforces grounded, explainable, and educational response style.
+
+3. **Backend/Firebase Agent**
+   - Owns Firebase Auth, Firestore schema, and Cloud Functions integration.
+   - Ensures secure API proxying for Gemini/Vertex calls and clean data contracts.
+
+4. **Security/Compliance Agent**
+   - Enforces "not financial advice" messaging and BNM/SC product boundaries.
+   - Reviews privacy controls (no NRIC/password capture) and scam-shield safety behavior.
+
+5. **UX/Cultural Agent**
+   - Maintains Wealth Garden, Qi, and Zodiac metaphor consistency across UI and copy.
+   - Localizes language and tone for Malaysian audiences without reducing clarity.
+
+6. **QA Agent**
+   - Validates feature flows, edge cases, and safety regressions.
+   - Confirms that onboarding, recommendation, and scam-shield scenarios work end-to-end.
+
+### Collaboration Workflow
+1. **Product Agent** defines feature brief and acceptance criteria.
+2. **Prompt/AI Agent** and **Backend/Firebase Agent** co-design logic and implementation boundaries.
+3. **Security/Compliance Agent** performs guardrail review before feature sign-off.
+4. **UX/Cultural Agent** refines user-facing language and metaphor consistency.
+5. **QA Agent** runs end-to-end validation and reports issues.
+6. Team loops back to responsible agent(s) until all criteria are met.
+
+### Handoff Protocol
+- Use explicit handoffs with three fields: **Input**, **Decision**, **Output**.
+- Every major decision must record:
+  - PRD requirement reference
+  - Compliance impact
+  - User-facing wording impact
+- Block release if Security/Compliance or QA has unresolved critical findings.
+
+### Conflict Resolution Rules
+- **Scope conflict:** Product Agent is final decision maker.
+- **Technical conflict:** Backend/Firebase Agent decides implementation path; Prompt/AI Agent decides model behavior constraints.
+- **Safety/compliance conflict:** Security/Compliance Agent has veto authority.
+- **Language/cultural conflict:** UX/Cultural Agent resolves with Product Agent alignment.
+
+### Utilization Guide (When to Engage Each Agent)
+- New feature planning: Product -> Prompt/AI + Backend/Firebase
+- Any user-facing financial statement: Security/Compliance + UX/Cultural mandatory review
+- Any model-output change: Prompt/AI + QA mandatory regression check
+- Pre-release: QA final validation with Security/Compliance approval
+
 ## Key Files
 - `PRD.md`: Full product requirements and technical roadmap.
 - `GEMINI.md`: This file, providing high-level context for AI interactions.

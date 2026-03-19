@@ -1,5 +1,7 @@
 # Duit-Cerdas AI: The Prosperity Path
 
+*A submission for the Project 2030: MyAI Future Hackathon.*
+
 Duit-Cerdas AI is a culturally-resonant financial education and investment advisor that leverages **Four Pillars of Destiny (Bazi)** and **Fengshui** metaphors to gamify wealth management for the Malaysian B40 & M40 communities.
 
 ## Contributors
