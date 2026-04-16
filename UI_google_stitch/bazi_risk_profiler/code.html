@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed-variant": "#005312",
+                    "on-primary-fixed-variant": "#004f4f",
+                    "on-primary-container": "#e3fffe",
+                    "on-tertiary-fixed": "#002204",
+                    "secondary-fixed-dim": "#c6c4df",
+                    "secondary-container": "#e2e0fc",
+                    "primary-fixed": "#93f2f2",
+                    "tertiary": "#156820",
+                    "surface-tint": "#006a6a",
+                    "primary-container": "#008080",
+                    "inverse-surface": "#2f3132",
+                    "surface": "#f9f9fb",
+                    "surface-container-high": "#e8e8ea",
+                    "secondary": "#5d5c74",
+                    "on-error-container": "#93000a",
+                    "outline-variant": "#bdc9c8",
+                    "primary": "#006565",
+                    "on-secondary-fixed-variant": "#45455b",
+                    "on-surface": "#1a1c1d",
+                    "on-tertiary": "#ffffff",
+                    "surface-variant": "#e2e2e4",
+                    "surface-container": "#eeeef0",
+                    "inverse-primary": "#76d6d5",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#e2e0fc",
+                    "outline": "#6e7979",
+                    "on-tertiary-container": "#ebffe3",
+                    "tertiary-container": "#338236",
+                    "on-surface-variant": "#3e4949",
+                    "on-secondary-container": "#63627a",
+                    "primary-fixed-dim": "#76d6d5",
+                    "on-background": "#1a1c1d",
+                    "tertiary-fixed-dim": "#88d982",
+                    "on-primary-fixed": "#002020",
+                    "surface-bright": "#f9f9fb",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed": "#1a1a2e",
+                    "inverse-on-surface": "#f0f0f2",
+                    "on-primary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "background": "#f9f9fb",
+                    "surface-container-highest": "#e2e2e4",
+                    "surface-dim": "#d9dadc",
+                    "on-error": "#ffffff",
+                    "surface-container-low": "#f3f3f5",
+                    "tertiary-fixed": "#a3f69c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9fb;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-[0_12px_40px_rgba(26,28,29,0.06)] docked full-width top-0 z-50 sticky">
+<div class="flex justify-between items-center w-full px-6 py-4">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-slate-900 dark:text-white font-['Inter']">Duit-Cerdas AI</span>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-slate-500 dark:text-slate-400 hover:opacity-80 transition-opacity font-medium" href="#">Garden</a>
+<a class="text-teal-700 dark:text-teal-300 font-semibold hover:opacity-80 transition-opacity" href="#">Profiler</a>
+<a class="text-slate-500 dark:text-slate-400 hover:opacity-80 transition-opacity font-medium" href="#">Scanner</a>
+<a class="text-slate-500 dark:text-slate-400 hover:opacity-80 transition-opacity font-medium" href="#">Vault</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-teal-600 dark:text-teal-400 hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined">notifications_active</span>
+</button>
+<button class="text-teal-600 dark:text-teal-400 hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined">shield_lock</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-high ml-2 border-2 border-primary-container/20">
+<img alt="User Wealth Profile" data-alt="Close-up portrait of a professional man in a dark navy suit against a soft grey studio background, studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAyL3io3rpfKam5no3VEEJ8I--gIkqgoJU8OQ5TCpHonKhjSl-VOMC5cYXR-2Ie5LIC0OWQnPvbA5TpIj6NSDoOC_XYKE2YpGjOtEFyr0VeAxNltPpWfcjjbOqRwclO3wiIJVuyiwF2KaSdC0WNZmJvuDWvlrn68aD2CwZXF4zpSoleO7w103EmBSO2KGCDaTvCZhjfpdRtdNJcM9tZ5dTdBJIpNGWghsuh8GdOCOmO8Uh0BTm3dMZa6Nefn9Qh-uN_erQxfNC"/>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 py-12 md:py-20 flex flex-col gap-12">
+<!-- Hero Section -->
+<div class="flex flex-col gap-4 max-w-2xl">
+<h1 class="text-5xl font-extrabold tracking-tight text-on-surface">BaZi Risk Profiler</h1>
+<p class="text-lg text-secondary leading-relaxed">
+                Unlock the ancient wisdom of your celestial footprint. We harmonize your birth data with market volatility to visualize your financial sanctuary's resilience.
+            </p>
+</div>
+<!-- Main Dashboard Bento Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left Column: Input Form (Glassmorphism) -->
+<div class="lg:col-span-5 flex flex-col gap-8">
+<section class="glass-panel rounded-xl p-8 shadow-sm">
+<h2 class="text-xl font-bold tracking-tight text-on-surface mb-8 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">calendar_today</span>
+                        Celestial Coordinates
+                    </h2>
+<form class="flex flex-col gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-[10px] uppercase tracking-widest font-bold text-secondary">Full Name</label>
+<input class="bg-surface-container-low border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-container/50 transition-all text-on-surface" placeholder="Enter your full name" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col gap-2">
+<label class="text-[10px] uppercase tracking-widest font-bold text-secondary">Birth Date</label>
+<input class="bg-surface-container-low border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-container/50 transition-all text-on-surface" type="date"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-[10px] uppercase tracking-widest font-bold text-secondary">Birth Time</label>
+<input class="bg-surface-container-low border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-container/50 transition-all text-on-surface" type="time"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-[10px] uppercase tracking-widest font-bold text-secondary">Birth Location</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">location_on</span>
+<input class="w-full bg-surface-container-low border-none rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-primary-container/50 transition-all text-on-surface" placeholder="City, Country" type="text"/>
+</div>
+</div>
+<button class="mt-4 bg-primary-container text-on-primary font-bold py-4 rounded-full flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-primary-container/20" type="submit">
+                            Analyze My Risk
+                            <span class="material-symbols-outlined">auto_awesome</span>
+</button>
+</form>
+</section>
+<div class="surface-container-low rounded-xl p-6 flex items-start gap-4">
+<span class="material-symbols-outlined text-primary-container">info</span>
+<p class="text-sm text-secondary font-medium leading-snug">
+                        Your data is encrypted using 256-bit AES protocol. We only use this for BaZi chart generation; no data is shared with third parties.
+                    </p>
+</div>
+</div>
+<!-- Right Column: Visualizations -->
+<div class="lg:col-span-7 flex flex-col gap-8">
+<!-- Risk Level Scale (Chromatic Fluency) -->
+<section class="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
+<div class="flex justify-between items-end mb-8">
+<div>
+<label class="text-[10px] uppercase tracking-widest font-bold text-secondary">Vulnerability Status</label>
+<h3 class="text-3xl font-bold text-on-surface">Stable Growth</h3>
+</div>
+<div class="bg-tertiary-container/10 text-tertiary px-4 py-2 rounded-full flex items-center gap-2 text-sm font-bold">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                            Harmonious
+                        </div>
+</div>
+<!-- The Scale Visual -->
+<div class="relative h-24 flex items-center">
+<div class="absolute inset-0 flex h-4 my-auto w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full w-1/3 bg-error/20"></div>
+<div class="h-full w-1/3 bg-on-secondary-fixed-variant/10"></div>
+<div class="h-full w-1/3 bg-tertiary/20"></div>
+</div>
+<!-- Current Position Marker -->
+<div class="absolute left-[72%] top-0 bottom-0 flex flex-col items-center">
+<div class="w-1 h-24 bg-primary-container rounded-full z-10"></div>
+<div class="absolute -top-6 bg-primary-container text-on-primary text-[10px] px-2 py-1 rounded-md font-bold">CURRENT</div>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-4 text-center mt-4">
+<div>
+<span class="text-[10px] font-bold text-error/60 uppercase tracking-tighter">High Risk</span>
+<p class="text-xs text-secondary">Volatile Roots</p>
+</div>
+<div>
+<span class="text-[10px] font-bold text-secondary/60 uppercase tracking-tighter">Moderate</span>
+<p class="text-xs text-secondary">Seasonal Shift</p>
+</div>
+<div>
+<span class="text-[10px] font-bold text-tertiary uppercase tracking-tighter">Optimal</span>
+<p class="text-xs text-secondary">Abundant Bloom</p>
+</div>
+</div>
+</section>
+<!-- Bento Sub-Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Wealth Element Card -->
+<div class="surface-container-low rounded-xl p-6 flex flex-col gap-6 relative overflow-hidden">
+<div class="relative z-10">
+<label class="text-[10px] uppercase tracking-widest font-bold text-secondary">Dominant Element</label>
+<h4 class="text-2xl font-bold text-on-surface mt-1">Yang Wood</h4>
+<p class="text-sm text-secondary mt-2">Represents upward growth, adaptability, and long-term vision.</p>
+</div>
+<div class="flex items-center gap-2 mt-auto">
+<div class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-3 py-1 rounded-full text-xs font-bold">STRENGTH: 84%</div>
+</div>
+<!-- Abstract Organic Background Shape -->
+<div class="absolute -right-8 -bottom-8 w-32 h-32 bg-tertiary/5 rounded-full blur-3xl"></div>
+</div>
+<!-- Prediction Insight Card -->
+<div class="surface-container-low rounded-xl p-6 flex flex-col gap-4 border-l-4 border-primary-container">
+<span class="material-symbols-outlined text-primary-container">psychology</span>
+<h4 class="font-bold text-on-surface">Quarterly Forecast</h4>
+<p class="text-sm text-secondary leading-snug">The current 'Earth' cycle suggests a period of consolidation. Avoid aggressive speculative ventures until the next Moon cycle.</p>
+<a class="text-xs font-bold text-primary-container mt-auto hover:underline flex items-center gap-1" href="#">
+                            READ FULL REPORT
+                            <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Wealth Garden Preview -->
+<section class="relative rounded-xl overflow-hidden aspect-[16/6] flex items-center px-8">
+<img alt="Lush green botanical garden" class="absolute inset-0 w-full h-full object-cover" data-alt="Dreamy view of a minimalist indoor zen garden with soft focus ferns and architectural teal lighting, editorial style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMJV2YupBpSua9LDZJDN9qLRt7Oj8w31qGtfP5hjxJigPGnmdcqOg1OfqxNPggmDhftXKuNKqkqP-_7XYJtqRiRPPE4kCs-WeYEelJExq-EXCYCP67G4-ATmHu_RQ3oFWcqqdZ5PEJVHFDWzZ4nzDptBVgc9GuOg09B0XhWToLT-zGqm3O_Sd6Tg0NdSQXvsM4i_D_250zIVEYI90JpASvLpLeeLPPbpdo3H3k-h0huQXSyroH__3t8ln0NBbHvMzZmEpamiSs"/>
+<div class="absolute inset-0 bg-gradient-to-r from-on-secondary-fixed/80 to-transparent"></div>
+<div class="relative z-10 flex flex-col gap-2 max-w-xs">
+<span class="text-[10px] uppercase tracking-widest font-bold text-primary-fixed">Wealth Garden</span>
+<h3 class="text-2xl font-bold text-white">Cultivate your future.</h3>
+<p class="text-sm text-white/80">See how your BaZi profile translates to real assets.</p>
+<button class="bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold px-6 py-2 rounded-full mt-2 w-fit text-sm hover:bg-white/20 transition-all">
+                            Visit Garden
+                        </button>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Hidden on desktop, shown on mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg md:hidden">
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1.5 hover:text-teal-500 transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">potted_plant</span>
+<span class="text-[10px] uppercase tracking-widest font-bold mt-1">Garden</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-200 rounded-2xl px-4 py-1.5 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="text-[10px] uppercase tracking-widest font-bold mt-1">Profiler</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1.5 hover:text-teal-500 transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">biotech</span>
+<span class="text-[10px] uppercase tracking-widest font-bold mt-1">Scanner</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1.5 hover:text-teal-500 transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="text-[10px] uppercase tracking-widest font-bold mt-1">Vault</span>
+</a>
+</nav>
+<!-- Floating Action Button (Contextual) -->
+<button class="fixed bottom-24 right-8 w-14 h-14 bg-primary-container text-on-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all md:bottom-8">
+<span class="material-symbols-outlined" data-weight="fill">chat_bubble</span>
+</button>
+</body></html>
