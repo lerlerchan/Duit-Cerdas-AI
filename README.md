@@ -7,10 +7,34 @@ Duit-Cerdas AI is a culturally-resonant financial education and investment advis
 ## Contributors
 - Gemini CLI (AI Agent)
 
-## Project Goals
-- **Financial Inclusion:** Increase participation in National Trust Funds (ASNB).
-- **Digital Sovereignty:** Promote local investment products.
-- **Security Education:** Teach scam awareness using cultural metaphors.
-- **AI Mastery:** Utilizing Google Gemini, Vertex AI, and Firebase.
+## Getting Started
 
-For more technical details, please refer to the `PRD.md` and `GEMINI.md` files.
+### 1. Setup Environment
+Copy `.env.example` to `.env` and fill in your keys:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `GEMINI_API_KEY`
+
+### 2. Initialize Database
+Execute the SQL in `supabase/schema.sql` in your Supabase SQL Editor.
+Then, run the seeding script to populate scam patterns for RAG:
+```bash
+node scripts/seed_scams.js
+```
+
+### 3. Run Development Server
+```bash
+npm install
+npm run dev
+```
+
+## Architecture
+- **Frontend/Backend:** Next.js (App Router)
+- **AI Engine:** Google Gemini 1.5 Flash (Profiler, Vision Analyzer, Game Master)
+- **Vector DB:** Supabase with `pgvector` for RAG-based scam simulation
+- **Styling:** Tailwind CSS with "Wealth Garden" design system
+
+## Features
+1. **BaZi Profiler:** Maps DOB to personality-based scam vulnerabilities.
+2. **AI Quest (RAG):** Dynamic, localized scam simulations using latest PDRM/BNM threat data.
+3. **Scam Shield:** Multimodal screenshot analysis for real-time risk scoring.
