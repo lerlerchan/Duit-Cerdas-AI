@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     const prompt = `
       You are the BaZi Profiler for Duit-Cerdas AI.
       Input: User's dominant Day Master element: ${baziElement}.
-      
+
       Instructions:
       1. Map the element to its corresponding psychological trait and high-risk scam type.
       2. Draft an empathetic, 2-3 sentence explanation of their vulnerability for a Malaysian audience.
@@ -38,11 +38,23 @@ export async function POST(req: Request) {
       - Earth: Craves Security. Vulnerable to Fake Fixed Deposits.
       - Metal: Rule-Abiding. Vulnerable to Macau Scams, Fake Police.
       - Water: Fearful / Overthinking. Vulnerable to Phishing, "Account Locked" SMS.
+
+      CRITICAL: The "risk_level" field MUST be exactly one of these three uppercase values: LOW, MODERATE, HIGH.
+      Do not use any other values, capitalizations, or variations.
+      - Wood, Water = MODERATE
+      - Fire, Earth = HIGH
+      - Metal = HIGH
     `;
 
     const result = await model.generateContent(prompt);
     const responseText = result.response.text();
     const profile = JSON.parse(responseText.replace(/```json|```/g, ''));
+
+    // Normalize risk_level to exact DB constraint values
+    const riskMap: Record<string, string> = {
+      low: 'LOW', moderate: 'MODERATE', medium: 'MODERATE', high: 'HIGH',
+    };
+    profile.risk_level = riskMap[profile.risk_level?.toLowerCase()] ?? 'MODERATE';
 
     // Save user to Supabase
     const { data, error } = await supabase
