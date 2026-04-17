@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/firebase';
+import { FieldValue } from 'firebase-admin/firestore';
 
 // Choices B (Ignore) and C (Verify) are the correct defensive actions
 const CORRECT_CHOICES = new Set(['B', 'b']);
@@ -22,13 +23,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ rewarded: false, growth_tokens: null });
     }
 
-    const { data, error } = await supabase.rpc('increment_growth_tokens', {
-      user_id_input: userId,
+    // Update tokens in Firestore
+    const userRef = db.collection('users').doc(userId);
+    await userRef.update({
+      growthTokens: FieldValue.increment(1)
     });
 
-    if (error) throw error;
+    const updatedDoc = await userRef.get();
+    const growthTokens = updatedDoc.data()?.growthTokens;
 
-    return NextResponse.json({ rewarded: true, growth_tokens: data });
+    return NextResponse.json({ rewarded: true, growth_tokens: growthTokens });
 
   } catch (error: any) {
     console.error('Reward Token Error:', error);

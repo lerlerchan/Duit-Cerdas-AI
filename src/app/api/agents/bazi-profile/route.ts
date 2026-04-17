@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getGeminiModel } from '@/lib/gemini';
-import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/firebase';
 
 // Simple calculation for Day Master element based on DOB for prototype
 // For production, this should use a proper BaZi calendar library.
@@ -56,22 +56,17 @@ export async function POST(req: Request) {
     };
     profile.risk_level = riskMap[profile.risk_level?.toLowerCase()] ?? 'MODERATE';
 
-    // Save user to Supabase
-    const { data, error } = await supabase
-      .from('users')
-      .insert([
-        { 
-          dob, 
-          bazi_element: baziElement,
-          risk_level: profile.risk_level 
-        }
-      ])
-      .select();
-
-    if (error) throw error;
+    // Save user to Firestore
+    const userRef = await db.collection('users').add({
+      dob,
+      bazi_element: baziElement,
+      risk_level: profile.risk_level,
+      growthTokens: 0,
+      createdAt: new Date().toISOString()
+    });
 
     return NextResponse.json({
-      userId: data[0].id,
+      userId: userRef.id,
       profile: {
         ...profile,
         element: baziElement

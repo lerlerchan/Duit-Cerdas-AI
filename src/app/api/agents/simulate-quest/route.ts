@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getGeminiModel, generateEmbedding } from '@/lib/gemini';
-import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/firebase';
+import { FieldValue } from 'firebase-admin/firestore';
 
 export async function POST(req: Request) {
   try {
@@ -10,29 +11,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    // 1. Fetch user element and risk profile
-    const { data: user, error: userError } = await supabase
-      .from('users')
-      .select('bazi_element, risk_level')
-      .eq('id', userId)
-      .single();
+    // 1. Fetch user element and risk profile from Firestore
+    const userDoc = await db.collection('users').doc(userId).get();
+    if (!userDoc.exists) throw new Error('User not found');
 
-    if (userError || !user) throw new Error('User not found');
+    const user = userDoc.data();
+    if (!user) throw new Error('User data missing');
 
-    // 2. RAG Pipeline: Fetch latest scam patterns from Supabase
-    // We'll search based on the user's vulnerability type
+    // 2. RAG Pipeline: Vector Search in Firestore
     const queryEmbedding = await generateEmbedding(user.bazi_element + " scam vulnerability");
-    
-    const { data: scamPatterns, error: ragError } = await supabase.rpc('match_scam_patterns', {
-      query_embedding: queryEmbedding,
-      match_threshold: 0.5,
-      match_count: 3
-    });
 
-    if (ragError) throw ragError;
+    const snapshot = await db.collection('scam_patterns')
+      .findNearest({
+        vectorField: 'embedding',
+        queryVector: queryEmbedding,
+        distanceMeasure: 'COSINE',
+        limit: 3
+      }).get();
 
-    const ragContext = scamPatterns && scamPatterns.length > 0 
-      ? scamPatterns.map((p: any) => p.content).join('\n')
+    const ragContext = snapshot.docs.length > 0
+      ? snapshot.docs.map(doc => doc.data().content).join('\n')
       : "General phishing and financial scam tactics in Malaysia.";
 
     // 3. Generate the AI Quest
@@ -56,15 +54,14 @@ export async function POST(req: Request) {
     const responseText = result.response.text();
     const simulation = JSON.parse(responseText.replace(/```json|```/g, ''));
 
-    // 4. Save simulation to Supabase for history
-    await supabase.from('simulations').insert([
-      {
-        user_id: userId,
-        scenario_title: simulation.scenario_title,
-        scammer_message: simulation.scammer_message,
-        choices: simulation.choices
-      }
-    ]);
+    // 4. Save simulation to Firestore for history
+    await db.collection('simulations').add({
+      userId: userId,
+      scenario_title: simulation.scenario_title,
+      scammer_message: simulation.scammer_message,
+      choices: simulation.choices,
+      createdAt: FieldValue.serverTimestamp()
+    });
 
     return NextResponse.json(simulation);
 

@@ -1,8 +1,15 @@
-const { createClient } = require('@supabase/supabase-js');
+const admin = require('firebase-admin');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 require('dotenv').config();
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+// Initialize Firebase Admin
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY || '{}');
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+  });
+}
+const db = admin.firestore();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const scams = [
@@ -32,15 +39,16 @@ async function seed() {
     const result = await model.embedContent(scam.content);
     const embedding = result.embedding.values;
 
-    const { error } = await supabase
-      .from('scam_patterns')
-      .insert({
+    try {
+      await db.collection('scam_patterns').add({
         content: scam.content,
-        embedding: embedding,
+        embedding: admin.firestore.FieldValue.vector(embedding),
         metadata: scam.metadata
       });
-
-    if (error) console.error(error);
+      console.log(`✅ Seeded ${scam.metadata.type}`);
+    } catch (error) {
+      console.error(`❌ Error seeding ${scam.metadata.type}:`, error);
+    }
   }
   console.log("Seeding complete!");
 }
