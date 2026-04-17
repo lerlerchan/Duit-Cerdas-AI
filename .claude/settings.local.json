@@ -3,7 +3,11 @@
     "allow": [
       "WebSearch",
       "Bash(npm install *)",
-      "Bash(npm uninstall *)"
+      "Bash(npm uninstall *)",
+      "Bash(firebase *)",
+      "Bash(npm list *)",
+      "Bash(ls *)",
+      "Bash(npx *)"
     ]
   }
 }
