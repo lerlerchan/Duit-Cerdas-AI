@@ -1,15 +1,52 @@
 'use client';
 
 import { useState } from 'react';
-import { Shield, Sprout, Gamepad2, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Shield, Sprout, Gamepad2, CheckCircle, XCircle, HelpCircle } from 'lucide-react';
+
+type RiskLevel = 'LOW' | 'MODERATE' | 'HIGH';
+
+interface Profile {
+  element: string;
+  core_trait: string;
+  primary_vulnerability: string;
+  risk_level: RiskLevel;
+  explanation: string;
+  mental_firewall_tip: string;
+}
+
+interface Choice {
+  id: string;
+  action_text: string;
+  feedback: string;
+}
+
+interface Quest {
+  scenario_title: string;
+  scammer_message: string;
+  choices: Choice[];
+}
+
+const RISK_PILL: Record<RiskLevel, { cls: string; label: string }> = {
+  LOW:      { cls: 'soft-pill soft-pill-low',      label: 'LOW RISK' },
+  MODERATE: { cls: 'soft-pill soft-pill-moderate', label: 'MODERATE RISK' },
+  HIGH:     { cls: 'soft-pill soft-pill-high',     label: 'HIGH RISK' },
+};
+
+const CHOICE_ICONS: Record<string, React.ReactNode> = {
+  A: <XCircle className="w-4 h-4 shrink-0 text-error" />,
+  B: <Shield className="w-4 h-4 shrink-0 text-primary" />,
+  C: <HelpCircle className="w-4 h-4 shrink-0 text-tertiary" />,
+};
 
 export default function Home() {
   const [step, setStep] = useState(1);
   const [dob, setDob] = useState('');
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [userId, setUserId] = useState('');
-  const [quest, setQuest] = useState<any>(null);
+  const [quest, setQuest] = useState<Quest | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [growthTokens, setGrowthTokens] = useState(0);
+  const [tokenEarned, setTokenEarned] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const getProfile = async () => {
@@ -33,121 +70,230 @@ export default function Home() {
     });
     const data = await res.json();
     setQuest(data);
+    setTokenEarned(false);
+    setFeedback(null);
     setStep(3);
     setLoading(false);
   };
 
+  const handleChoice = async (choice: Choice) => {
+    setFeedback(choice.feedback);
+
+    const res = await fetch('/api/agents/reward-token', {
+      method: 'POST',
+      body: JSON.stringify({ userId, choiceId: choice.id }),
+    });
+    const data = await res.json();
+    if (data.rewarded) {
+      setGrowthTokens(data.growth_tokens);
+      setTokenEarned(true);
+    }
+  };
+
+  const restart = () => {
+    setStep(1);
+    setFeedback(null);
+    setTokenEarned(false);
+    setQuest(null);
+    setProfile(null);
+    setDob('');
+  };
+
+  const riskPill = profile ? (RISK_PILL[profile.risk_level] ?? RISK_PILL.MODERATE) : null;
+
   return (
-    <main className="max-w-md mx-auto min-h-screen p-6 font-sans">
-      <header className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-green-800 flex items-center justify-center gap-2">
-          <Sprout className="text-green-600" /> Duit-Cerdas AI
-        </h1>
-        <p className="text-gray-500 italic mt-1">Cultivating Your Wealth Garden</p>
+    <main className="max-w-md mx-auto min-h-screen p-6" style={{ background: '#f9f9fb' }}>
+
+      {/* Header */}
+      <header className="text-center mb-10">
+        <div className="inline-flex items-center justify-center gap-2 mb-3">
+          <div className="w-9 h-9 rounded-md flex items-center justify-center"
+               style={{ background: 'linear-gradient(135deg, #006565, #008080)' }}>
+            <Sprout className="w-5 h-5 text-white" />
+          </div>
+          <h1 className="text-2xl font-bold" style={{ color: '#1a1a2e' }}>
+            Duit-Cerdas AI
+          </h1>
+        </div>
+        <p className="label-md">The Digital Arboretum · Prosperity Path</p>
+
+        {growthTokens > 0 && (
+          <div className="mt-3 flex justify-center">
+            <span className="growth-token-chip">
+              <Sprout className="w-3 h-3" />
+              {growthTokens} Growth {growthTokens === 1 ? 'Token' : 'Tokens'}
+            </span>
+          </div>
+        )}
       </header>
 
+      {/* ── Step 1: DOB Input ── */}
       {step === 1 && (
-        <section className="garden-card animate-in fade-in duration-500">
-          <h2 className="text-xl font-semibold mb-4 text-green-700">Blessings of the Elements</h2>
-          <p className="text-gray-600 mb-6 text-sm">To start your prosperity path, share your date of birth for your psychological wealth profile.</p>
-          <input 
-            type="date" 
-            className="w-full p-3 border border-green-200 rounded-xl mb-4 outline-green-400"
-            value={dob}
-            onChange={(e) => setDob(e.target.value)}
-          />
-          <button 
+        <section className="arboretum-card space-y-6">
+          <div>
+            <p className="headline-sm mb-1">Blessings of the Elements</p>
+            <p className="text-sm leading-relaxed" style={{ color: '#44475a' }}>
+              Share your date of birth to receive your psychological wealth &amp; scam vulnerability profile.
+            </p>
+          </div>
+
+          <div>
+            <label className="label-md block mb-2">Date of Birth</label>
+            <input
+              type="date"
+              className="arboretum-input"
+              value={dob}
+              onChange={(e) => setDob(e.target.value)}
+            />
+          </div>
+
+          <button
             disabled={!dob || loading}
             onClick={getProfile}
-            className="w-full primary-btn disabled:opacity-50"
+            className="btn-primary w-full"
           >
-            {loading ? 'Consulting Stars...' : 'Discover My Profile'}
+            {loading ? 'Consulting the Stars…' : 'Discover My Profile'}
           </button>
         </section>
       )}
 
-      {step === 2 && profile && (
-        <section className="garden-card animate-in slide-in-from-right duration-500">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="bg-green-100 p-3 rounded-full">
-              <Sprout className="text-green-600" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold">You are a {profile.element} Element</h2>
-              <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold">
-                RISK: {profile.risk_level}
-              </span>
-            </div>
-          </div>
-          <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
-            <p><strong>Trait:</strong> {profile.core_trait}</p>
-            <p className="bg-green-50 p-3 rounded-lg border-l-4 border-green-400 italic">
-              "{profile.explanation}"
-            </p>
-            <div className="bg-blue-50 p-3 rounded-lg flex gap-3 items-start">
-              <Shield className="w-8 h-8 text-blue-500 shrink-0" />
+      {/* ── Step 2: Profile Reveal ── */}
+      {step === 2 && profile && riskPill && (
+        <section className="space-y-4">
+          {/* Element hero */}
+          <div className="arboretum-card">
+            <div className="flex items-start justify-between mb-4">
               <div>
-                <p className="font-bold text-blue-800">Your Mental Firewall:</p>
-                <p className="text-xs">{profile.mental_firewall_tip}</p>
+                <p className="label-md mb-1">Your Element</p>
+                <h2 className="text-2xl font-bold" style={{ color: '#1a1a2e' }}>
+                  {profile.element}
+                </h2>
+                <p className="text-sm mt-0.5" style={{ color: '#5d5c74' }}>{profile.core_trait}</p>
+              </div>
+              <span className={riskPill.cls}>{riskPill.label}</span>
+            </div>
+
+            <blockquote className="text-sm leading-relaxed italic px-4 py-3 rounded-md"
+                        style={{ background: '#f3f3f5', color: '#44475a', borderLeft: '3px solid #008080' }}>
+              {profile.explanation}
+            </blockquote>
+          </div>
+
+          {/* Mental Firewall */}
+          <div className="arboretum-section">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 w-8 h-8 rounded-md flex items-center justify-center shrink-0"
+                   style={{ background: 'rgba(0, 101, 101, 0.08)' }}>
+                <Shield className="w-4 h-4" style={{ color: '#006565' }} />
+              </div>
+              <div>
+                <p className="label-md mb-1">Your Mental Firewall</p>
+                <p className="text-sm leading-relaxed" style={{ color: '#44475a' }}>
+                  {profile.mental_firewall_tip}
+                </p>
               </div>
             </div>
           </div>
-          <button 
+
+          <button
             onClick={startQuest}
             disabled={loading}
-            className="w-full mt-6 primary-btn flex items-center justify-center gap-2"
+            className="btn-primary w-full flex items-center justify-center gap-2"
           >
-            <Gamepad2 className="w-5 h-5" />
-            {loading ? 'Preparing Quest...' : 'Enter AI Quest'}
+            <Gamepad2 className="w-4 h-4" />
+            {loading ? 'Preparing Quest…' : 'Enter AI Quest'}
           </button>
         </section>
       )}
 
+      {/* ── Step 3: Quest ── */}
       {step === 3 && quest && (
-        <section className="space-y-4 animate-in slide-in-from-bottom duration-500">
-          <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 relative">
-             <div className="absolute -top-3 left-6 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider shadow-sm">
-               New Message
-             </div>
-             <p className="text-sm font-mono text-gray-800 pt-2">{quest.scammer_message}</p>
+        <section className="space-y-4">
+          {/* Scammer message card */}
+          <div className="relative">
+            <span className="absolute -top-2.5 left-4 label-md px-2 py-0.5 rounded-pill text-white"
+                  style={{ background: '#ba1a1a', fontSize: '9px' }}>
+              INCOMING MESSAGE
+            </span>
+            <div className="arboretum-card pt-6">
+              <p className="label-md mb-2">{quest.scenario_title}</p>
+              <p className="text-sm font-mono leading-relaxed" style={{ color: '#1a1a2e' }}>
+                {quest.scammer_message}
+              </p>
+            </div>
           </div>
 
           {!feedback ? (
             <div className="space-y-2">
-              <p className="text-[10px] uppercase font-bold text-gray-400 ml-2">Choose Your Action:</p>
-              {quest.choices.map((c: any) => (
+              <p className="label-md ml-1">Choose Your Action</p>
+              {quest.choices.map((c) => (
                 <button
                   key={c.id}
-                  onClick={() => setFeedback(c.feedback)}
-                  className="w-full bg-white border-2 border-green-100 hover:border-green-400 p-4 rounded-2xl text-left text-sm transition-all group active:scale-[0.98]"
+                  onClick={() => handleChoice(c)}
+                  className="w-full text-left p-4 rounded-md flex items-start gap-3 transition-opacity"
+                  style={{ background: '#ffffff', boxShadow: '0 12px 40px rgba(26,28,29,0.06)' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
+                  onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
                 >
-                  <span className="font-bold text-green-600 group-hover:bg-green-500 group-hover:text-white w-6 h-6 inline-flex items-center justify-center rounded-full border border-green-200 mr-2 transition-colors">
-                    {c.id}
+                  {CHOICE_ICONS[c.id.toUpperCase()] ?? null}
+                  <span className="text-sm" style={{ color: '#1a1a2e' }}>
+                    <span className="font-semibold">{c.id}.</span> {c.action_text}
                   </span>
-                  {c.action_text}
                 </button>
               ))}
             </div>
           ) : (
-            <div className="garden-card bg-green-50 border-green-200">
-               <h3 className="font-bold text-green-800 flex items-center gap-2 mb-2">
-                 <AlertTriangle className="w-5 h-5" /> Guru's Advice:
-               </h3>
-               <p className="text-sm leading-relaxed mb-6">{feedback}</p>
-               <button 
-                onClick={() => {setStep(1); setFeedback(null);}}
-                className="w-full border-2 border-green-600 text-green-600 p-3 rounded-full font-bold hover:bg-green-50 transition-colors"
-               >
-                 Restart Journey
-               </button>
+            <div className="arboretum-card space-y-4">
+              {tokenEarned && (
+                <div className="flex items-center gap-2 p-3 rounded-md"
+                     style={{ background: 'rgba(21,104,32,0.08)' }}>
+                  <CheckCircle className="w-4 h-4 shrink-0" style={{ color: '#156820' }} />
+                  <span className="text-sm font-semibold" style={{ color: '#156820' }}>
+                    +1 Growth Token earned
+                  </span>
+                  <span className="growth-token-chip ml-auto">
+                    <Sprout className="w-3 h-3" /> {growthTokens}
+                  </span>
+                </div>
+              )}
+
+              <div>
+                <p className="label-md mb-2">Guru's Advice</p>
+                <p className="text-sm leading-relaxed" style={{ color: '#44475a' }}>
+                  {feedback}
+                </p>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={startQuest}
+                  disabled={loading}
+                  className="btn-secondary flex-1 text-sm"
+                >
+                  {loading ? 'Loading…' : 'Next Quest'}
+                </button>
+                <button
+                  onClick={restart}
+                  className="flex-1 text-sm px-4 py-3 rounded-pill font-semibold transition-opacity"
+                  style={{ color: '#5d5c74', background: '#f3f3f5' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.8')}
+                  onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+                >
+                  Restart
+                </button>
+              </div>
             </div>
           )}
         </section>
       )}
 
-      <footer className="mt-12 text-center text-[10px] text-gray-400">
-        <p>⚠️ NOT financial advice. Always verify with official BNM / SC channels.</p>
-        <p className="mt-2">© 2026 Duit-Cerdas AI • Project 2030 Hackathon</p>
+      <footer className="mt-16 text-center space-y-1">
+        <p className="label-md" style={{ fontSize: '9px' }}>
+          Not financial advice · Verify with official BNM / SC channels
+        </p>
+        <p className="label-md" style={{ fontSize: '9px', color: '#bdc9c8' }}>
+          © 2026 Duit-Cerdas AI · Project 2030 Hackathon
+        </p>
       </footer>
     </main>
   );

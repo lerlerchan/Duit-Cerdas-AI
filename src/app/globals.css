@@ -2,20 +2,106 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 :root {
-  --background: #fdfcf9;
-  --foreground: #2d3436;
+  --background: #f9f9fb;
+  --foreground: #1a1a2e;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
+  font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-.garden-card {
-  @apply bg-white border border-green-100 rounded-2xl shadow-sm p-6;
+/* ── Surface Cards (No-Line Rule: no borders, only tonal depth) ── */
+.arboretum-card {
+  @apply bg-surface-container-lowest rounded-md p-6;
+  box-shadow: 0 12px 40px rgba(26, 28, 29, 0.06);
 }
 
-.primary-btn {
-  @apply bg-green-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-700 transition-colors shadow-md;
+.arboretum-section {
+  @apply bg-surface-container-low rounded-md p-6;
+}
+
+/* ── Glassmorphism overlay ── */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  @apply rounded-md;
+}
+
+/* ── Buttons ── */
+.btn-primary {
+  background: linear-gradient(135deg, #006565, #008080);
+  @apply text-on-primary px-6 py-3 rounded-pill font-semibold transition-opacity;
+}
+.btn-primary:hover {
+  opacity: 0.88;
+}
+.btn-primary:active {
+  opacity: 0.76;
+}
+.btn-primary:disabled {
+  @apply opacity-40 cursor-not-allowed;
+}
+
+.btn-secondary {
+  @apply bg-secondary-container text-on-secondary-fixed px-6 py-3 rounded-pill font-semibold transition-opacity;
+}
+.btn-secondary:hover {
+  opacity: 0.88;
+}
+
+/* ── Soft Pill risk indicators (Chromatic Fluency) ── */
+.soft-pill {
+  @apply inline-flex items-center px-3 py-1 rounded-pill text-xs font-semibold tracking-wide;
+}
+.soft-pill-low {
+  background: rgba(51, 130, 54, 0.12);
+  @apply text-tertiary-container;
+}
+.soft-pill-moderate {
+  background: rgba(120, 100, 30, 0.10);
+  color: #7c6820;
+}
+.soft-pill-high {
+  background: rgba(186, 26, 26, 0.10);
+  @apply text-error;
+}
+
+/* ── Growth Token chip ── */
+.growth-token-chip {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-pill text-xs font-semibold;
+  background: linear-gradient(135deg, rgba(21, 104, 32, 0.12), rgba(163, 246, 156, 0.2));
+  color: #156820;
+}
+
+/* ── Minimalist input (underline only, no 4-sided box) ── */
+.arboretum-input {
+  @apply w-full bg-surface-container-low px-4 py-3 rounded-md text-on-surface outline-none transition-all;
+  border: none;
+  border-bottom: 2px solid transparent;
+}
+.arboretum-input:focus {
+  border-bottom-color: #006565;
+  background: #f0fafa;
+}
+
+/* ── Typography scale ── */
+.display-md {
+  @apply text-4xl font-bold tracking-tight;
+  color: #1a1a2e;
+}
+.headline-sm {
+  @apply text-lg font-semibold tracking-widest uppercase;
+  color: #5d5c74;
+}
+.label-md {
+  @apply text-xs font-semibold tracking-widest uppercase;
+  color: #5d5c74;
 }
