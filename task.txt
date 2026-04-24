@@ -1,0 +1,3 @@
+https://gemini.google.com/share/1d73a732211a
+
+  ! npx firebase-tools login
