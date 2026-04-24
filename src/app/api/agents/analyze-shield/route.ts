@@ -26,8 +26,24 @@ export async function POST(req: Request) {
       6. Output strictly in the provided JSON schema. No markdown formatting.
     `;
 
-    const responseText = await analyzeImage(buffer, mimeType, prompt);
-    const analysis = JSON.parse(responseText.replace(/```json|```/g, ''));
+    const fallbackAnalysis = {
+      fraud_probability_score: 50,
+      risk_level: 'MEDIUM',
+      red_flags_identified: [
+        'Urgent language',
+        'Unverified sender'
+      ],
+      explanation: 'We could not complete AI analysis. Treat this as suspicious and verify via official channels.',
+      recommended_action: 'Do not click links or share OTP. Verify using official hotlines.'
+    };
+
+    let analysis = fallbackAnalysis;
+    try {
+      const responseText = await analyzeImage(buffer, mimeType, prompt);
+      analysis = JSON.parse(responseText.replace(/```json|```/g, ''));
+    } catch (modelError: any) {
+      console.warn('Gemini unavailable, using fallback analysis:', modelError?.message || modelError);
+    }
 
     return NextResponse.json(analysis);
 

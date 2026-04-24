@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getGeminiModel } from '@/lib/gemini';
-import { db } from '@/lib/firebase';
+import { getDb } from '@/lib/firebase';
+import { memoryStore } from '@/lib/memory-store';
 
 // Simple calculation for Day Master element based on DOB for prototype
 // For production, this should use a proper BaZi calendar library.
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
     }
 
     const baziElement = calculateBaziElement(dob);
-    const model = getGeminiModel("gemini-1.5-flash");
+    const model = getGeminiModel();
 
     const prompt = `
       You are the BaZi Profiler for Duit-Cerdas AI.
@@ -46,9 +47,31 @@ export async function POST(req: Request) {
       - Metal = HIGH
     `;
 
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
-    const profile = JSON.parse(responseText.replace(/```json|```/g, ''));
+    const fallbackProfile = {
+      element: baziElement,
+      core_trait: baziElement === 'Fire' ? 'Impulsive / FOMO' :
+        baziElement === 'Earth' ? 'Craves Security' :
+        baziElement === 'Metal' ? 'Rule-Abiding' :
+        baziElement === 'Water' ? 'Fearful / Overthinking' :
+        'High Empathy / Trusting',
+      primary_vulnerability: baziElement === 'Fire' ? 'Get-Rich-Quick, Crypto' :
+        baziElement === 'Earth' ? 'Fake Fixed Deposits' :
+        baziElement === 'Metal' ? 'Macau Scams, Fake Police' :
+        baziElement === 'Water' ? 'Phishing, "Account Locked" SMS' :
+        'Romance Scams, Fake Charities',
+      risk_level: (baziElement === 'Wood' || baziElement === 'Water') ? 'MODERATE' : 'HIGH',
+      explanation: `Your ${baziElement} element suggests a distinct scam vulnerability. Stay calm and verify before acting on urgent financial requests.`,
+      mental_firewall_tip: 'Pause, verify with a trusted channel, and never act on pressure.'
+    };
+
+    let profile = fallbackProfile;
+    try {
+      const result = await model.generateContent(prompt);
+      const responseText = result.response.text();
+      profile = JSON.parse(responseText.replace(/```json|```/g, ''));
+    } catch (modelError: any) {
+      console.warn('Gemini unavailable, using fallback profile:', modelError?.message || modelError);
+    }
 
     // Normalize risk_level to exact DB constraint values
     const riskMap: Record<string, string> = {
@@ -56,22 +79,43 @@ export async function POST(req: Request) {
     };
     profile.risk_level = riskMap[profile.risk_level?.toLowerCase()] ?? 'MODERATE';
 
-    // Save user to Firestore
-    const userRef = await db.collection('users').add({
-      dob,
-      bazi_element: baziElement,
-      risk_level: profile.risk_level,
-      growthTokens: 0,
-      createdAt: new Date().toISOString()
-    });
+    try {
+      const db = getDb();
+      // Save user to Firestore
+      const userRef = await db.collection('users').add({
+        dob,
+        bazi_element: baziElement,
+        risk_level: profile.risk_level,
+        growthTokens: 0,
+        createdAt: new Date().toISOString()
+      });
 
-    return NextResponse.json({
-      userId: userRef.id,
-      profile: {
-        ...profile,
-        element: baziElement
-      }
-    });
+      return NextResponse.json({
+        userId: userRef.id,
+        profile: {
+          ...profile,
+          element: baziElement
+        }
+      });
+    } catch (dbError: any) {
+      console.warn('Firestore unavailable, using in-memory store:', dbError?.message || dbError);
+      const userId = crypto.randomUUID();
+      memoryStore.setUser(userId, {
+        dob,
+        bazi_element: baziElement,
+        risk_level: profile.risk_level,
+        growthTokens: 0,
+        createdAt: new Date().toISOString()
+      });
+
+      return NextResponse.json({
+        userId,
+        profile: {
+          ...profile,
+          element: baziElement
+        }
+      });
+    }
 
   } catch (error: any) {
     console.error('Bazi Profiler Error:', error);
