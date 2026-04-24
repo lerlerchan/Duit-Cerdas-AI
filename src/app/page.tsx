@@ -51,29 +51,49 @@ export default function Home() {
 
   const getProfile = async () => {
     setLoading(true);
-    const res = await fetch('/api/agents/bazi-profile', {
-      method: 'POST',
-      body: JSON.stringify({ dob }),
-    });
-    const data = await res.json();
-    setProfile(data.profile);
-    setUserId(data.userId);
-    setStep(2);
-    setLoading(false);
+    try {
+      const res = await fetch('/api/agents/bazi-profile', {
+        method: 'POST',
+        body: JSON.stringify({ dob }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.error('Profile fetch failed:', data.error);
+        setLoading(false);
+        return;
+      }
+      setProfile(data.profile);
+      setUserId(data.userId);
+      setStep(2);
+    } catch (error) {
+      console.error('Profile fetch error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const startQuest = async () => {
     setLoading(true);
-    const res = await fetch('/api/agents/simulate-quest', {
-      method: 'POST',
-      body: JSON.stringify({ userId }),
-    });
-    const data = await res.json();
-    setQuest(data);
-    setTokenEarned(false);
-    setFeedback(null);
-    setStep(3);
-    setLoading(false);
+    try {
+      const res = await fetch('/api/agents/simulate-quest', {
+        method: 'POST',
+        body: JSON.stringify({ userId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.error('Quest fetch failed:', data.error);
+        setLoading(false);
+        return;
+      }
+      setQuest(data);
+      setTokenEarned(false);
+      setFeedback(null);
+      setStep(3);
+    } catch (error) {
+      console.error('Quest fetch error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChoice = async (choice: Choice) => {
