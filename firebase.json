@@ -1,5 +1,15 @@
 {
-  "apphosting": {
-    "name": "duit-cerdas-ai"
-  }
+  "apphosting": [
+    {
+      "backendId": "duit-cerdas-ai",
+      "rootDir": ".",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "functions"
+      ]
+    }
+  ]
 }
