@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     const snapshot = await db.collection('scam_patterns')
       .findNearest({
         vectorField: 'embedding',
-        queryVector: queryEmbedding,
+        queryVector: FieldValue.vector(queryEmbedding),
         distanceMeasure: 'COSINE',
         limit: 3
       }).get();
