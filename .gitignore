@@ -2,12 +2,13 @@
 .env.local
 .env*.local
 *.pem
-*.json
 !package.json
+!package-lock.json
 !tsconfig.json
 !firebase.json
 !.firebaserc
 !apphosting.yaml
+!next-env.d.ts
 node_modules
 .next
 .gemini

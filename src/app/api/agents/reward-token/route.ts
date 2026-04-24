@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
+import { getDb } from '@/lib/firebase';
+import { memoryStore } from '@/lib/memory-store';
 import { FieldValue } from 'firebase-admin/firestore';
 
 // Choices B (Ignore) and C (Verify) are the correct defensive actions
@@ -23,16 +24,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ rewarded: false, growth_tokens: null });
     }
 
-    // Update tokens in Firestore
-    const userRef = db.collection('users').doc(userId);
-    await userRef.update({
-      growthTokens: FieldValue.increment(1)
-    });
+    try {
+      const db = getDb();
+      // Update tokens in Firestore
+      const userRef = db.collection('users').doc(userId);
+      await userRef.update({
+        growthTokens: FieldValue.increment(1)
+      });
 
-    const updatedDoc = await userRef.get();
-    const growthTokens = updatedDoc.data()?.growthTokens;
+      const updatedDoc = await userRef.get();
+      const growthTokens = updatedDoc.data()?.growthTokens;
 
-    return NextResponse.json({ rewarded: true, growth_tokens: growthTokens });
+      return NextResponse.json({ rewarded: true, growth_tokens: growthTokens });
+    } catch (dbError: any) {
+      console.warn('Firestore unavailable, using in-memory store:', dbError?.message || dbError);
+      const growthTokens = memoryStore.incrementTokens(userId);
+      if (growthTokens === null) {
+        return NextResponse.json({ rewarded: false, growth_tokens: null });
+      }
+      return NextResponse.json({ rewarded: true, growth_tokens: growthTokens });
+    }
 
   } catch (error: any) {
     console.error('Reward Token Error:', error);
