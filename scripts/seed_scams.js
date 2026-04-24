@@ -32,7 +32,7 @@ const scams = [
 ];
 
 async function seed() {
-  const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
+  const model = genAI.getGenerativeModel({ model: "embedding-001" });
 
   for (const scam of scams) {
     console.log(`Embedding: ${scam.metadata.type}...`);

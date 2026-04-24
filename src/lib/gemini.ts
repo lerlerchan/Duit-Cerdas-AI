@@ -7,7 +7,7 @@ export const getGeminiModel = (modelName: string = "gemini-1.5-flash") => {
 };
 
 export const generateEmbedding = async (text: string) => {
-  const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
+  const model = genAI.getGenerativeModel({ model: "embedding-001" });
   const result = await model.embedContent(text);
   return result.embedding.values;
 };
